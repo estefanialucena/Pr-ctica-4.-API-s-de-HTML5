@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Reproductor de Video</title>
+</head>
+<body>
+  <div>
+    <label for="video-file-input">Seleccionar archivo de video:</label>
+    <input type="file" id="video-file-input">
+  </div>
+  <video id="video-player" width="640" height="360"></video>
+  <div>
+    <button id="play-pause-btn" disabled>Play</button>
+    <button id="stop-btn" disabled>Stop</button>
+    <button id="volume-up-btn" disabled>+ Vol</button>
+    <button id="volume-down-btn" disabled>- Vol</button>
+  </div>
+  <script>
+    const videoPlayer = document.querySelector('#video-player');
+    const playPauseBtn = document.querySelector('#play-pause-btn');
+    const stopBtn = document.querySelector('#stop-btn');
+    const volumeUpBtn = document.querySelector('#volume-up-btn');
+    const volumeDownBtn = document.querySelector('#volume-down-btn');
+    const fileInput = document.querySelector('#video-file-input');
+
+    playPauseBtn.addEventListener('click', () => {
+      if (videoPlayer.paused) {
+        videoPlayer.play();
+        playPauseBtn.textContent = 'Pause';
+      } else {
+        videoPlayer.pause();
+        playPauseBtn.textContent = 'Play';
+      }
+    });
+
+    stopBtn.addEventListener('click', () => {
+      videoPlayer.pause();
+      videoPlayer.currentTime = 0;
+      playPauseBtn.textContent = 'Play';
+    });
+
+    volumeUpBtn.addEventListener('click', () => {
+      if (videoPlayer.volume < 1.0) {
+        videoPlayer.volume += 0.1;
+      }
+    });
+
+    volumeDownBtn.addEventListener('click', () => {
+      if (videoPlayer.volume > 0.0) {
+        videoPlayer.volume -= 0.1;
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+
+      if (file.type.indexOf('video/') === 0) {
+        const fileURL = URL.createObjectURL(file);
+        videoPlayer.src = fileURL;
+      } else {
+        alert('El archivo seleccionado no es un video válido.');
+      }
+    });
+
+    videoPlayer.addEventListener('canplay', () => {
+      playPauseBtn.disabled = false;
+      stopBtn.disabled = false;
+      volumeUpBtn.disabled = false;
+      volumeDownBtn.disabled = false;
+    });
+
+    videoPlayer.addEventListener('waiting', () => {
+      const loadingMessage = document.createElement('div');
+      loadingMessage.textContent = 'Cargando video...';
+      document.body.appendChild(loadingMessage);
+    });
+
+    videoPlayer.addEventListener('canplay', () => {
+      const loadingMessage = document.querySelector('div');
+      if (loadingMessage) {
+        document.body.removeChild(loadingMessage);
+      }
+    });
+  </script>
+</body>
+</html>
